@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Pattaya&family=Thasadith&family=Sarabun&display=swap');
 
-@import "primeng/resources/themes/lara-dark-blue/theme.css";
+@import "primeng/resources/themes/lara-dark-indigo/theme.css";
 @import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
 @import "primeflex/primeflex.css";
@@ -161,3 +161,17 @@ body {
     min-width: 100%;
   }
 }
+
+.isTable {
+  th {
+    color: darkcyan !important;
+    font-size: 18px;
+    font-weight: bold !important;
+  }
+
+  th,
+  td {
+    font-family: 'Sarabun', sans-serif !important;
+  }
+}
+

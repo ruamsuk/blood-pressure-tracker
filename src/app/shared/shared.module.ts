@@ -25,6 +25,9 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { TreeSelectModule } from 'primeng/treeselect';
 import { AutoCompleteModule } from 'primeng/autocomplete';
+import { ToolbarModule } from 'primeng/toolbar';
+import { DropdownModule } from 'primeng/dropdown';
+import { TabViewModule } from 'primeng/tabview';
 
 @NgModule({
   exports: [
@@ -39,6 +42,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     FormsModule,
     ReactiveFormsModule,
     DialogModule,
+    DropdownModule,
     DynamicDialogModule,
     ButtonModule,
     InputTextModule,
@@ -47,7 +51,9 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
     InputSwitchModule,
     PasswordModule,
     TableModule,
+    TabViewModule,
     ToastModule,
+    ToolbarModule,
     MenuModule,
     MenubarModule,
     InputTextareaModule,
