@@ -7,6 +7,8 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  query,
+  orderBy,
 } from '@angular/fire/firestore';
 import { BloodPressure } from '../models/blood-pressure.model';
 import { from, map, Observable } from 'rxjs';
@@ -36,7 +38,8 @@ export class BloodService {
 
   getBloods() {
     const bpCollection = collection(this.firestore, this.collectionName);
-    return collectionData(bpCollection, { idField: 'id' }).pipe(
+    const bpQuery = query(bpCollection, orderBy('date', 'desc'));
+    return collectionData(bpQuery, { idField: 'id' }).pipe(
       map((data) => data as BloodPressure[]),
     );
   }

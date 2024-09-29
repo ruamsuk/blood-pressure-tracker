@@ -20,14 +20,15 @@ import { UserService } from '../../services/user.service';
       <div class="card">
         @if (bloods$ | async; as bloods) {
           <p-table
-            class="isTable"
-            #tb
+            #bp
             [value]="bloods"
-            [rowHover]="true"
-            [rows]="10"
             [paginator]="true"
-            [responsiveLayout]="'scroll'"
-            [tableStyle]="{ 'min-width': '360px' }"
+            [rows]="5"
+            [rowHover]="true"
+            [breakpoint]="'960px'"
+            [tableStyle]="{ 'min-width': '50rem' }"
+            responsiveLayout="stack"
+            styleClass="p-datatable-gridlines"
           >
             <ng-template pTemplate="caption">
               <div class="flex align-items-center justify-content-between">
@@ -52,14 +53,14 @@ import { UserService } from '../../services/user.service';
                     class="sarabun"
                     pInputText
                     [(ngModel)]="searchValue"
-                    pTooltip="หารายการ หรือหมายเหตุ"
+                    pTooltip="Search Date."
                     tooltipPosition="bottom"
-                    placeholder="ค้นหา .."
+                    placeholder="Search Date .."
                     type="text"
-                    (input)="tb.filterGlobal(getValue($event), 'contains')"
+                    (input)="bp.filterGlobal(getValue($event), 'contains')"
                   />
                   @if (searchValue) {
-                    <span class="icons" (click)="clear(tb)">
+                    <span class="icons" (click)="clear(bp)">
                       <i class="pi pi-times" style="font-size: 1rem"></i>
                     </span>
                   }
@@ -68,30 +69,59 @@ import { UserService } from '../../services/user.service';
             </ng-template>
             <ng-template pTemplate="header">
               <tr>
-                <th>#</th>
-                <th>Date</th>
-                <th>BP1 Sys</th>
-                <th>BP1 Dia</th>
-                <th>BP1 Pulse</th>
-                <th>BP2 Sys</th>
-                <th>BP2 Dia</th>
-                <th>BP2 Pulse</th>
-                <th>Action</th>
+                <th rowspan="3" style="width: 20%">Date.</th>
+              </tr>
+              <tr>
+                <th
+                  colspan="2"
+                  style="width: 20%"
+                  class="text-center text-green-400"
+                >
+                  Morning<br /><span class="text-gray-600"
+                    >(Before medicine)</span
+                  >
+                </th>
+                <th
+                  colspan="2"
+                  style="width: 20%"
+                  class="text-center text-yellow-400"
+                >
+                  Evening<br /><span class="text-gray-600"
+                    >(After medicine )</span
+                  >
+                </th>
+                <th></th>
+              </tr>
+              <tr>
+                <th style="width: 15%" class="text-green-400">BP1</th>
+                <th style="width: 15%" class="text-green-400">BP2</th>
+                <th style="width: 15%" class="text-yellow-400">BP1</th>
+                <th style="width: 15%" class="text-yellow-400">BP2</th>
+                <th style="width: 15%" class="text-teal-400">Action</th>
               </tr>
             </ng-template>
             <ng-template pTemplate="body" let-blood let-i="rowIndex">
               <tr>
-                <td>{{ currentPage * rowsPerPage + i + 1 }}</td>
-                <td style="width: 120px">
-                  {{ blood.morning.date | thaiDate }}
+                <!--<td>
+                  {{ currentPage * rowsPerPage + i + 1 }}
+                </td>-->
+                <td>
+                  <span class="p-column-title">Date</span>
+                  {{ blood.date | thaiDate }}
                 </td>
-                <td>{{ blood.morning.bp1Sys }}</td>
-                <td>{{ blood.morning.bp1Dia }}</td>
-                <td>{{ blood.morning.bp1Pulse }}</td>
-                <td>{{ blood.morning.bp2Sys }}</td>
-                <td>{{ blood.morning.bp2Dia }}</td>
-                <td>{{ blood.morning.bp2Pulse }}</td>
-                <td style="min-width: 100px">
+                <td>
+                  {{ blood.morning.bp1 }}
+                </td>
+                <td>
+                  {{ blood.morning.bp2 }}
+                </td>
+                <td>
+                  {{ blood.evening.bp1 }}
+                </td>
+                <td>
+                  {{ blood.evening.bp2 }}
+                </td>
+                <td>
                   @if (admin) {
                     <i
                       class="pi pi-pen-to-square mr-2 ml-2 text-blue-400"
@@ -108,17 +138,17 @@ import { UserService } from '../../services/user.service';
                 </td>
               </tr>
             </ng-template>
-            <ng-template pTemplate="emptymessage">
-              <tr>
-                <td colspan="6" class="text-center anuphon">No data found.</td>
-              </tr>
-            </ng-template>
           </p-table>
         }
       </div>
     </div>
   `,
-  styles: ``,
+  styles: `
+    td {
+      font-family: 'Sarabun', sans-serif !important;
+      color: #a3a1a1;
+    }
+  `,
 })
 export class BloodListComponent implements OnInit, OnDestroy {
   ref: DynamicDialogRef | undefined;
@@ -174,11 +204,11 @@ export class BloodListComponent implements OnInit, OnDestroy {
     this.ref = this.dialogService.open(BloodAddEditComponent, {
       data: blood,
       header: header,
-      width: '560px',
+      width: '360px',
       breakpoints: {
-        '960px': '85vw',
-        '640px': '95vw',
-        '390px': '95vw',
+        '960px': '40vw',
+        '640px': '40vw',
+        '390px': '40vw',
       },
     });
   }
