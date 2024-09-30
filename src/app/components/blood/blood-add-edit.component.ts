@@ -1,6 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  Renderer2,
+  ViewChild,
+} from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TimeOptions } from '../../models/blood-pressure.model';
 import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { BloodService } from '../../services/blood.service';
@@ -24,11 +30,13 @@ import { InputMask } from 'primeng/inputmask';
           <p-calendar
             [iconDisplay]="'input'"
             [showIcon]="true"
+            dateFormat="dd/mm/yy"
             appendTo="body"
             inputId="icondisplay"
             formControlName="date"
             name="date"
             class="w-full"
+            (onSelect)="onDateSelect()"
           />
         </div>
         <div class="flex-auto">
@@ -145,22 +153,36 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
     private message: MessagesService,
     private translate: TranslateService,
     private pConfig: PrimeNGConfig,
+    private renderer: Renderer2,
   ) {
     this.bpForm = this.fb.group({
       date: [''],
       morning: this.fb.group({
-        bp1: [''],
-        bp2: [''],
+        bp1: ['', Validators.required],
+        bp2: ['', Validators.required],
       }),
       evening: this.fb.group({
-        bp1: [''],
-        bp2: [''],
+        bp1: ['', Validators.required],
+        bp2: ['', Validators.required],
       }),
     });
   }
 
   ngOnInit() {
     if (this.config.data) {
+      const data = this.config.data;
+      this.bpForm.patchValue({
+        id: data.id,
+        date: data.date.toDate(),
+        morning: {
+          bp1: data.morning.bp1,
+          bp2: data.morning.bp2,
+        },
+        evening: {
+          bp1: data.evening.bp1,
+          bp2: data.evening.bp2,
+        },
+      });
     }
 
     this.timeOptions = [
@@ -170,6 +192,19 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
 
     this.translate.setDefaultLang('th');
     this.slate('th');
+  }
+
+  onDateSelect() {
+    setTimeout(() => {
+      if (this.bp1Morning) {
+        const inputElement =
+          this.bp1Morning.el.nativeElement.querySelector('input');
+        if (inputElement) {
+          this.renderer.selectRootElement(inputElement).focus();
+        }
+      }
+      this.bp1Morning?.el.nativeElement.focus();
+    }, 0);
   }
 
   moveFocus(nextElement: InputMask): void {
@@ -204,7 +239,9 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    if (this.ref) this.ref.destroy();
+  }
 
   close() {
     this.ref.close();

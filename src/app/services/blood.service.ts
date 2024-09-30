@@ -9,6 +9,7 @@ import {
   deleteDoc,
   query,
   orderBy,
+  where,
 } from '@angular/fire/firestore';
 import { BloodPressure } from '../models/blood-pressure.model';
 import { from, map, Observable } from 'rxjs';
@@ -39,6 +40,34 @@ export class BloodService {
   getBloods() {
     const bpCollection = collection(this.firestore, this.collectionName);
     const bpQuery = query(bpCollection, orderBy('date', 'desc'));
+    return collectionData(bpQuery, { idField: 'id' }).pipe(
+      map((data) => data as BloodPressure[]),
+    );
+  }
+
+  getBloodsByDateRange(
+    startDate: Date,
+    endDate: Date,
+  ): Observable<BloodPressure[]> {
+    const startTimestamp = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth(),
+      startDate.getDate(),
+    );
+    const endTimestamp = new Date(
+      endDate.getFullYear(),
+      endDate.getMonth(),
+      endDate.getDate(),
+    );
+
+    const bpCollection = collection(this.firestore, this.collectionName);
+    const bpQuery = query(
+      bpCollection,
+      where('date', '>=', startTimestamp),
+      where('date', '<=', endTimestamp),
+      orderBy('date', 'desc'),
+    );
+
     return collectionData(bpQuery, { idField: 'id' }).pipe(
       map((data) => data as BloodPressure[]),
     );

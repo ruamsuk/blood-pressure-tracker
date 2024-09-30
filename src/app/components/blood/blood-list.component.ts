@@ -204,11 +204,11 @@ export class BloodListComponent implements OnInit, OnDestroy {
     this.ref = this.dialogService.open(BloodAddEditComponent, {
       data: blood,
       header: header,
-      width: '360px',
+      width: '1200px',
       breakpoints: {
-        '960px': '40vw',
-        '640px': '40vw',
-        '390px': '40vw',
+        '960px': '90vw',
+        '640px': '90vw',
+        '390px': '90vw',
       },
     });
   }
