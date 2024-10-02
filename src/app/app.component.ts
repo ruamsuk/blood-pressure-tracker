@@ -34,6 +34,7 @@ import { FooterComponent } from './components/page/footer.component';
           <ng-template pTemplate="center">
             <div class="flex flex-wrap align-items-center gap-3">
               <button
+                routerLink="/home"
                 class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200"
               >
                 <i class="pi pi-home text-2xl"></i>

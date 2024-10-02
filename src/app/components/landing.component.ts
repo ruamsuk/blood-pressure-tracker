@@ -45,14 +45,76 @@ import { Router } from '@angular/router';
         </div>
       </div>
     } @else {
-      <p>Welcome to thailand.</p>
+      <div class="flex justify-content-center align-items-center mt-5">
+        <p-galleria
+          [value]="images"
+          [autoPlay]="true"
+          [responsiveOptions]="responsiveOptions"
+          [numVisible]="5"
+          [circular]="true"
+          [showThumbnails]="false"
+          [containerStyle]="{ 'max-width': '700px' }"
+        >
+          <ng-template pTemplate="item" let-item>
+            <img
+              [src]="item"
+              style="width: 100%; max-width: 100%; height: auto;"
+              alt=""
+            />
+          </ng-template>
+        </p-galleria>
+      </div>
     }
   `,
-  styles: ``,
+  styles: `
+    p-galleria img {
+      width: 100%;
+      max-width: 700px; /* กำหนดขนาดสูงสุดที่ต้องการ */
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      border-radius: 15px;
+    }
+  `,
 })
 export class LandingComponent {
   verify: boolean = false;
+  images: any[] = [
+    'images/004.jpg',
+    'images/005.jpg',
+    'images/006.jpg',
+    'images/001.jpg',
+    'images/002.jpg',
+    'images/003.jpg',
+  ];
 
+  // images: { url: string; title: string }[] = [
+  //   { url: 'images/004.jpg', title: 'Image 1' },
+  //   { url: 'images/005.jpg', title: 'Image 1' },
+  //   { url: 'images/006.jpg', title: 'Image 1' },
+  //   { url: 'images/001.jpg', title: 'Image 1' },
+  //   { url: 'images/002.jpg', title: 'Image 2' },
+  //   { url: 'images/003.jpg', title: 'Image 3' },
+  // ];
+
+  responsiveOptions: any[] = [
+    {
+      breakpoint: '1500px',
+      numVisible: 5,
+    },
+    {
+      breakpoint: '1024px',
+      numVisible: 3,
+    },
+    {
+      breakpoint: '768px',
+      numVisible: 2,
+    },
+    {
+      breakpoint: '560px',
+      numVisible: 1,
+    },
+  ];
   /**
    *  ถ้าผู้ใช้ ยืนยันอีเมลแล้ว, this.verify จะเป็น false
    *  ถ้าผู้ใช้ ยังไม่ได้ยืนยันอีเมล, this.verify จะเป็น true

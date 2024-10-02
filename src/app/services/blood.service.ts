@@ -72,4 +72,24 @@ export class BloodService {
       map((data) => data as BloodPressure[]),
     );
   }
+
+  getBloodsByYearRange(
+    startYear: number,
+    endYear: number,
+  ): Observable<BloodPressure[]> {
+    const startTimestamp = new Date(startYear, 0, 1); // เริ่มต้นวันที่ 1 มกราคมของปีเริ่มต้น
+    const endTimestamp = new Date(endYear, 11, 31, 23, 59, 59); // สิ้นสุดวันที่ 31 ธันวาคมของปีสิ้นสุด
+
+    const bpCollection = collection(this.firestore, this.collectionName);
+    const bpQuery = query(
+      bpCollection,
+      where('date', '>=', startTimestamp),
+      where('date', '<=', endTimestamp),
+      orderBy('date', 'desc'),
+    );
+
+    return collectionData(bpQuery, { idField: 'id' }).pipe(
+      map((data) => data as BloodPressure[]),
+    );
+  }
 }

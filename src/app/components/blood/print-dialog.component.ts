@@ -52,10 +52,17 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 
       <div class="text-center mt-5">
         <p-button
+          class="mr-2"
           label="Convert2Pdf"
           severity="secondary"
           size="small"
           (onClick)="generatePDF()"
+        ></p-button>
+        <p-button
+          label="Direct Prn"
+          severity="secondary"
+          size="small"
+          (onClick)="printPage()"
         ></p-button>
       </div>
     }
@@ -78,11 +85,42 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
     }
 
     .custom-table th {
-      padding-top: 12px;
-      padding-bottom: 12px;
+      padding-top: 6px;
+      padding-bottom: 6px;
       text-align: left;
-      background-color: #f2f2f2;
+      //background-color: #f2f2f2;
       color: black;
+    }
+
+    @media print {
+      button {
+        .p-button-label {
+          display: none;
+        }
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
+
+      /* ตั้งค่าหน้ากระดาษ */
+      @page {
+        margin: 1cm;
+        size: A4 portrait;
+      }
     }
   `,
 })
@@ -120,5 +158,10 @@ export class PrintDialogComponent implements OnDestroy {
 
   ngOnDestroy() {
     if (this.ref) this.ref.close();
+  }
+
+  printPage() {
+    window.print();
+    this.ref.close();
   }
 }

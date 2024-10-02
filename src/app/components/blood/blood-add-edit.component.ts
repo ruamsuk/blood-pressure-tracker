@@ -156,6 +156,7 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
   ) {
     this.bpForm = this.fb.group({
+      id: [''],
       date: [''],
       morning: this.fb.group({
         bp1: ['', Validators.required],
@@ -223,10 +224,22 @@ export class BloodAddEditComponent implements OnInit, OnDestroy {
     if (this.bpForm.invalid) {
       return;
     }
-    console.log(JSON.stringify(this.bpForm.value, null, 2));
+    // console.log(JSON.stringify(this.bpForm.value, null, 2));
     if (this.config.data) {
       // edit data
+      const data = this.bpForm.value;
+      this.bloodService.updateBlood(data.id, data).subscribe({
+        error: (error) => {
+          this.message.showError(error.message);
+          console.log(JSON.stringify(error, null, 2));
+        },
+        complete: () => {
+          this.message.showSuccess('Update Blood pressure successfully');
+          this.close();
+        },
+      });
     } else {
+      // new record
       this.bloodService.createBlood(this.bpForm.value).subscribe({
         next: () => {
           this.message.showSuccess('Create Blood pressure successfully');

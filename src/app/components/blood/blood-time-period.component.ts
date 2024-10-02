@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnDestroy, OnInit } from '@angular/core';
 import { SharedModule } from '../../shared/shared.module';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { MessagesService } from '../../services/messages.service';
 import { ConfirmationService, PrimeNGConfig } from 'primeng/api';
@@ -9,9 +9,6 @@ import { Observable, take } from 'rxjs';
 import { BloodService } from '../../services/blood.service';
 import { BloodPressure } from '../../models/blood-pressure.model';
 import { ThaiDatePipe } from '../../pipe/thai-date.pipe';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { docData } from '@angular/fire/firestore';
 import { PrintDialogComponent } from './print-dialog.component';
 
 @Component({
@@ -45,9 +42,7 @@ import { PrintDialogComponent } from './print-dialog.component';
         </form>
       </p-card>
     </div>
-    <div
-      class="table-container justify-content-center justify-content-center -mt-3"
-    >
+    <div class="table-container justify-content-center -mt-3">
       <div class="card">
         @if (bloodPressureRecords$ | async; as bloods) {
           <div id="contentToConvert">
@@ -62,7 +57,7 @@ import { PrintDialogComponent } from './print-dialog.component';
               responsiveLayout="stack"
               styleClass="p-datatable-gridlines"
             >
-              <ng-template pTemplate="caption" class="no-print">
+              <ng-template pTemplate="caption">
                 <div class="flex justify-content-between align-items-center">
                   <span class="tasadith text-orange-300 text-xl">
                     Blood Pressure Time Period
@@ -183,7 +178,6 @@ export class BloodTimePeriodComponent implements OnDestroy, OnInit {
     private formBuilder: FormBuilder,
     private dialogService: DialogService,
     private pConfig: PrimeNGConfig,
-    private destroyRef: DestroyRef,
     private bloodService: BloodService,
     private messageService: MessagesService,
     private confirmService: ConfirmationService,

@@ -10,6 +10,8 @@ import { Table } from 'primeng/table';
 import { catchError, Observable, of } from 'rxjs';
 import { ThaiDatePipe } from '../../pipe/thai-date.pipe';
 import { UserService } from '../../services/user.service';
+import { ConfirmationService } from 'primeng/api';
+import { Timestamp } from 'firebase/firestore';
 
 @Component({
   selector: 'app-blood-list',
@@ -23,6 +25,7 @@ import { UserService } from '../../services/user.service';
             #bp
             [value]="bloods"
             [paginator]="true"
+            [globalFilterFields]="['date']"
             [rows]="5"
             [rowHover]="true"
             [breakpoint]="'960px'"
@@ -110,16 +113,44 @@ import { UserService } from '../../services/user.service';
                   {{ blood.date | thaiDate }}
                 </td>
                 <td>
-                  {{ blood.morning.bp1 }}
+                  <div
+                    [ngClass]="{
+                      'high-bp': isBloodPressureHigh(blood.morning.bp1),
+                      'normal-bp': !isBloodPressureHigh(blood.morning.bp1),
+                    }"
+                  >
+                    {{ blood.morning.bp1 }}
+                  </div>
                 </td>
                 <td>
-                  {{ blood.morning.bp2 }}
+                  <div
+                    [ngClass]="{
+                      'high-bp': isBloodPressureHigh(blood.morning.bp2),
+                      'normal-bp': !isBloodPressureHigh(blood.morning.bp1),
+                    }"
+                  >
+                    {{ blood.morning.bp2 }}
+                  </div>
                 </td>
                 <td>
-                  {{ blood.evening.bp1 }}
+                  <div
+                    [ngClass]="{
+                      'high-bp': isBloodPressureHigh(blood.evening.bp1),
+                      'normal-bp': !isBloodPressureHigh(blood.morning.bp1),
+                    }"
+                  >
+                    {{ blood.evening.bp1 }}
+                  </div>
                 </td>
                 <td>
-                  {{ blood.evening.bp2 }}
+                  <div
+                    [ngClass]="{
+                      'high-bp': isBloodPressureHigh(blood.evening.bp2),
+                      'normal-bp': !isBloodPressureHigh(blood.morning.bp1),
+                    }"
+                  >
+                    {{ blood.evening.bp2 }}
+                  </div>
                 </td>
                 <td>
                   @if (admin) {
@@ -148,6 +179,20 @@ import { UserService } from '../../services/user.service';
       font-family: 'Sarabun', sans-serif !important;
       color: #a3a1a1;
     }
+
+    .icons {
+      position: relative;
+      right: 30px;
+      //top: 10px;
+    }
+
+    .high-bp {
+      color: red;
+    }
+
+    .normal-bp {
+      color: inherit; /* หรือสีอื่นที่ต้องการ */
+    }
   `,
 })
 export class BloodListComponent implements OnInit, OnDestroy {
@@ -157,10 +202,12 @@ export class BloodListComponent implements OnInit, OnDestroy {
 
   admin: boolean = false;
   searchValue: string = '';
-  currentPage = 0;
-  rowsPerPage = 10;
+  // สำหรับสร้างเลขลำดับรายการในตาราง
+  // currentPage = 0;
+  // rowsPerPage = 10;
 
   constructor(
+    private confirmService: ConfirmationService,
     private dialogService: DialogService,
     private bloodService: BloodService,
     private messageService: MessagesService,
@@ -194,6 +241,12 @@ export class BloodListComponent implements OnInit, OnDestroy {
     });
   }
 
+  /** */
+  isBloodPressureHigh(bp: string): boolean {
+    const [systolic, diastolic] = bp.split('/').map(Number);
+    return systolic > 140 || diastolic > 90;
+  }
+
   getValue(event: Event): string {
     return (event.target as HTMLInputElement).value;
   }
@@ -204,7 +257,7 @@ export class BloodListComponent implements OnInit, OnDestroy {
     this.ref = this.dialogService.open(BloodAddEditComponent, {
       data: blood,
       header: header,
-      width: '1200px',
+      width: '360px',
       breakpoints: {
         '960px': '90vw',
         '640px': '90vw',
@@ -222,10 +275,28 @@ export class BloodListComponent implements OnInit, OnDestroy {
     if (this.ref) this.ref.close();
   }
 
-  addEditBlood(morning: any) {}
-
   confirm(event: Event, morning: any) {
-    console.log(JSON.stringify(event, null, 2));
-    console.log(JSON.stringify(morning, null, 2));
+    this.confirmService.confirm({
+      target: event.target as EventTarget,
+      message: 'ต้องการลบรายการนี้ แน่ใจ?',
+      header: 'Confirmation',
+      icon: 'pi pi-info-circle',
+      acceptButtonStyleClass: 'p-button-warning p-button-sm',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {
+        this.bloodService.deleteBlood(morning).subscribe({
+          next: () => {
+            this.messageService.showSuccess('ลบข้อมูลเรียบร้อยแล้ว');
+          },
+          error: (error: any) => {
+            this.messageService.showError(error.message);
+          },
+          complete: () => {},
+        });
+      },
+      reject: () => {
+        this.messageService.showWarn('ยกเลิกการลบแล้ว!');
+      },
+    });
   }
 }

@@ -28,6 +28,7 @@ import { AutoCompleteModule } from 'primeng/autocomplete';
 import { ToolbarModule } from 'primeng/toolbar';
 import { DropdownModule } from 'primeng/dropdown';
 import { TabViewModule } from 'primeng/tabview';
+import { GalleriaModule } from 'primeng/galleria';
 
 @NgModule({
   exports: [
@@ -40,6 +41,7 @@ import { TabViewModule } from 'primeng/tabview';
     ConfirmPopupModule,
     ConfirmDialogModule,
     FormsModule,
+    GalleriaModule,
     ReactiveFormsModule,
     DialogModule,
     DropdownModule,
