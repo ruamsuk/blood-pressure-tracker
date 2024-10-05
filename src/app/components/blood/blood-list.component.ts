@@ -219,7 +219,7 @@ export class BloodListComponent implements OnInit, OnDestroy {
     this.userService.currentUserProfile$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user) => {
-        this.admin = user?.role === 'admin';
+        this.admin = user?.role === 'admin' || user?.role === 'manager';
         this.currentUser = user;
       });
     this.getBloodList();

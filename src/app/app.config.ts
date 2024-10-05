@@ -18,6 +18,7 @@ import { MessagesModule } from 'primeng/messages';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { getStorage, provideStorage } from '@angular/fire/storage';
 
 firebase.initializeApp(environment.firebaseConfig);
 
@@ -29,6 +30,7 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
+    provideStorage(() => getStorage()),
     importProvidersFrom(
       TranslateModule.forRoot({
         loader: {

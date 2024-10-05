@@ -29,6 +29,7 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { DropdownModule } from 'primeng/dropdown';
 import { TabViewModule } from 'primeng/tabview';
 import { GalleriaModule } from 'primeng/galleria';
+import { FileUploadModule } from 'primeng/fileupload';
 
 @NgModule({
   exports: [
@@ -41,6 +42,7 @@ import { GalleriaModule } from 'primeng/galleria';
     ConfirmPopupModule,
     ConfirmDialogModule,
     FormsModule,
+    FileUploadModule,
     GalleriaModule,
     ReactiveFormsModule,
     DialogModule,

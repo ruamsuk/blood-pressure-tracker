@@ -8,6 +8,7 @@ import {
 import { BloodListComponent } from './components/blood/blood-list.component';
 import { LandingComponent } from './components/landing.component';
 import { BloodTabComponent } from './components/blood/blood-tab.component';
+import { UserListComponent } from './components/user/user-list.component';
 
 const redirectUnauthorizedToLogin = () => redirectUnauthorizedTo(['login']);
 const redirectLoggedInToHome = () => redirectLoggedInTo(['home']);
@@ -26,6 +27,11 @@ export const routes: Routes = [
   {
     path: 'home',
     component: LandingComponent,
+    ...canActivate(redirectUnauthorizedToLogin),
+  },
+  {
+    path: 'user',
+    component: UserListComponent,
     ...canActivate(redirectUnauthorizedToLogin),
   },
   {

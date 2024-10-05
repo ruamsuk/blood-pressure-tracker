@@ -53,7 +53,7 @@ import { Router } from '@angular/router';
           [numVisible]="5"
           [circular]="true"
           [showThumbnails]="false"
-          [containerStyle]="{ 'max-width': '700px' }"
+          [containerStyle]="{ 'max-width': '1100px' }"
         >
           <ng-template pTemplate="item" let-item>
             <img
@@ -69,7 +69,7 @@ import { Router } from '@angular/router';
   styles: `
     p-galleria img {
       width: 100%;
-      max-width: 700px; /* กำหนดขนาดสูงสุดที่ต้องการ */
+      max-width: 1100px; /* กำหนดขนาดสูงสุดที่ต้องการ */
       height: auto;
       display: block;
       margin: 0 auto;
@@ -83,8 +83,12 @@ export class LandingComponent {
     'images/004.jpg',
     'images/005.jpg',
     'images/006.jpg',
+    'images/007.jpg',
     'images/001.jpg',
     'images/002.jpg',
+    'images/008.jpg',
+    'images/009.jpg',
+    'images/010.jpg',
     'images/003.jpg',
   ];
 
@@ -124,7 +128,10 @@ export class LandingComponent {
     private router: Router,
   ) {
     this.authService.currentUser$.subscribe((user) => {
-      this.verify = !user.emailVerified;
+      if (user) {
+        this.verify = !user.emailVerified;
+        console.log(JSON.stringify(user, null, 2));
+      }
     });
 
     console.log(this.verify);

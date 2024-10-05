@@ -6,6 +6,8 @@ import { MessagesService } from './services/messages.service';
 import { SharedModule } from './shared/shared.module';
 import { take } from 'rxjs';
 import { FooterComponent } from './components/page/footer.component';
+import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import { ProfileComponent } from './components/user/profile.component';
 
 @Component({
   selector: 'app-root',
@@ -46,6 +48,12 @@ import { FooterComponent } from './components/page/footer.component';
                 <i class="pi pi-heart-fill text-2xl"></i>
               </button>
               <button
+                routerLink="/user"
+                class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200"
+              >
+                <i class="pi pi-user-plus text-2xl"></i>
+              </button>
+              <button
                 class="p-link inline-flex justify-content-center align-items-center text-white h-3rem w-3rem border-circle hover:bg-white-alpha-10 transition-all transition-duration-200"
               >
                 <i class="pi pi-sign-out text-2xl" (click)="logout()"></i>
@@ -55,9 +63,12 @@ import { FooterComponent } from './components/page/footer.component';
           <ng-template pTemplate="end">
             <div class="flex align-items-center gap-2">
               <p-avatar [image]="photo" shape="circle" />
-              <span class="font-bold text-bluegray-50">
-                {{ currentUser()?.email || currentUser()?.displayName }}
-              </span>
+              <span
+                class="font-bold text-bluegray-50 hover:text-cyan-100 cursor-pointer"
+                (click)="openDialog()"
+              >
+                {{ currentUser()?.email || currentUser()?.displayName }} </span
+              ><i class="pi pi-angle-down"></i>
             </div>
           </ng-template>
         </p-toolbar>
@@ -84,16 +95,21 @@ export class AppComponent implements OnInit, OnDestroy {
   authService = inject(AuthService);
   userService = inject(UserService);
   message = inject(MessagesService);
+  dialogService = inject(DialogService);
   router = inject(Router);
+  ref: DynamicDialogRef | undefined;
+  photo: any;
 
   currentUser = this.userService.currentUserProfile;
   loading = this.message.loading;
 
-  photo = this.currentUser()?.photoURL
-    ? this.currentUser()?.photoURL
-    : '/images/dummy-user.png';
-
-  ngOnInit() {}
+  ngOnInit() {
+    this.authService.currentUser$.subscribe((user: any) => {
+      if (user) {
+        this.photo = user?.photoURL ? user.photoURL : '/images/dummy-user.png';
+      }
+    });
+  }
 
   logout() {
     this.authService
@@ -102,5 +118,21 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(() => this.router.navigate(['/login']));
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    if (this.ref) this.ref.destroy();
+  }
+
+  openDialog() {
+    this.ref = this.dialogService.open(ProfileComponent, {
+      data: this.currentUser(),
+      header: 'User Profile',
+      width: '520px',
+      contentStyle: { overflow: 'auto' },
+      breakpoints: {
+        '960px': '90vw',
+        '640px': '90vw',
+        '390px': '90vw',
+      },
+    });
+  }
 }
