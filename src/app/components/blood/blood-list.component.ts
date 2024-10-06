@@ -207,7 +207,7 @@ export class BloodListComponent implements OnInit, OnDestroy {
   // rowsPerPage = 10;
 
   constructor(
-    private confirmService: ConfirmationService,
+    private confService: ConfirmationService,
     private dialogService: DialogService,
     private bloodService: BloodService,
     private messageService: MessagesService,
@@ -276,7 +276,7 @@ export class BloodListComponent implements OnInit, OnDestroy {
   }
 
   confirm(event: Event, morning: any) {
-    this.confirmService.confirm({
+    this.confService.confirm({
       target: event.target as EventTarget,
       message: 'ต้องการลบรายการนี้ แน่ใจ?',
       header: 'Confirmation',

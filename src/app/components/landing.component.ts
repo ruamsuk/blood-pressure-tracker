@@ -130,11 +130,11 @@ export class LandingComponent {
     this.authService.currentUser$.subscribe((user) => {
       if (user) {
         this.verify = !user.emailVerified;
-        console.log(JSON.stringify(user, null, 2));
+        // console.log(JSON.stringify(user, null, 2));
       }
     });
 
-    console.log(this.verify);
+    // console.log(this.verify);
   }
 
   sendEmailVerify(): void {

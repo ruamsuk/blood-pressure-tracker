@@ -9,12 +9,17 @@ import {
   throwError,
 } from 'rxjs';
 import { SharedModule } from '../../shared/shared.module';
-import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
+import {
+  DialogService,
+  DynamicDialogConfig,
+  DynamicDialogRef,
+} from 'primeng/dynamicdialog';
 import { UserService } from '../../services/user.service';
 import { AuthService } from '../../services/auth.service';
 import { FormControl, FormGroup } from '@angular/forms';
 import { getAuth, User } from '@angular/fire/auth';
 import { ImageUploadService } from '../../services/image-upload.service';
+import { MessagesService } from '../../services/messages.service';
 
 @Component({
   selector: 'app-profile',
@@ -22,6 +27,16 @@ import { ImageUploadService } from '../../services/image-upload.service';
   imports: [SharedModule],
   template: `
     <hr class="h-px bg-gray-200 border-0" />
+    <div class="card mt-3 mb-3">
+      @if (uploadProgress) {
+        <p-progressBar [value]="uploadProgress">
+          <ng-template pTemplate="content" let-value>
+            <span>{{ value }}%</span>
+          </ng-template>
+        </p-progressBar>
+      }
+    </div>
+
     @if (user$ | async; as user) {
       <div class="flex justify-content-center">
         <div class="profile-image">
@@ -46,10 +61,8 @@ import { ImageUploadService } from '../../services/image-upload.service';
           hidden="hidden"
           (change)="uploadImage($event, user)"
         />
-        @if (uploadProgress) {
-          <p-progressBar [value]="uploadProgress"></p-progressBar>
-        }
       </div>
+
       <form [formGroup]="profileForm" (ngSubmit)="saveProfile()">
         <div class="formgrid grid">
           <div class="field col">
@@ -208,13 +221,15 @@ export class ProfileComponent {
     address: new FormControl(''),
     role: new FormControl({ value: '', disabled: this.disabled }),
   });
-  uploadProgress?: number;
+  uploadProgress?: number | null | undefined;
 
   constructor(
     private dialogService: DialogService,
     private userService: UserService,
+    private message: MessagesService,
     private imageService: ImageUploadService,
     private authService: AuthService,
+    private dialogData: DynamicDialogConfig,
     private ref: DynamicDialogRef,
   ) {
     const auth = getAuth();
@@ -234,6 +249,7 @@ export class ProfileComponent {
         address: user.address || '',
         role: user.role || '',
       });
+      this.role = user.role;
     });
   }
 
@@ -243,7 +259,7 @@ export class ProfileComponent {
       .uploadImage(file, `images/profile/${user.uid}`)
       .pipe(
         switchMap((progress: number) => {
-          console.log('Upload progress:', progress);
+          // console.log('Upload progress:', progress);
           this.uploadProgress = progress;
           if (progress === 100) {
             return this.imageService
@@ -251,7 +267,7 @@ export class ProfileComponent {
               .pipe(
                 catchError((error) => {
                   console.error('Error getting download URL', error);
-                  return throwError(error);
+                  return throwError(() => new Error(`${error}`));
                 }),
               );
           } else {
@@ -272,16 +288,57 @@ export class ProfileComponent {
         catchError((error) => {
           console.error('Error updating profile:', error);
           // แสดงข้อความแจ้งให้ผู้ใช้ทราบ
-          return throwError(error);
+          return throwError(() => new Error(`${error}`));
         }),
       )
       .subscribe({
-        next: () => console.log('Upload complete'),
+        next: () => {
+          this.message.showSuccess('Uploaded successfully');
+          setTimeout(() => {
+            this.uploadProgress = null;
+          }, 2000);
+        },
         error: (error: any) => console.error('Upload error: ', error),
       });
   }
 
-  saveProfile() {}
+  saveProfile() {
+    const userData = this.profileForm.value;
+    const data = {
+      uid: userData.uid,
+      displayName: userData.displayName,
+      email: this.user.email,
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      phone: userData.phone,
+      address: userData.address,
+      role: this.role,
+    };
+
+    if (this.dialogData.data) {
+      this.userService.updateUser(data).subscribe({
+        next: () => {},
+        error: (err) => this.message.showError(err.message),
+        complete: () => {
+          this.message.showSuccess('Updated Successfully');
+          this.close();
+          this.profileForm.reset();
+        },
+      });
+    } else {
+      this.userService.addUser(data).subscribe({
+        next: (value) => {},
+        error: (error) => {
+          this.message.showError(error.message);
+        },
+        complete: () => {
+          this.message.showSuccess('Added Successfully');
+          this.close();
+          this.profileForm.reset();
+        },
+      });
+    }
+  }
 
   sendEmail() {}
 

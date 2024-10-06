@@ -6,6 +6,7 @@ import {
   doc,
   docData,
   Firestore,
+  getDoc,
   setDoc,
   updateDoc,
 } from '@angular/fire/firestore';
@@ -41,7 +42,21 @@ export class UserService {
     >;
   }
 
-  addUser(user: ProfileUser): Observable<void> {
+  getUserByUid(uid: string): Observable<ProfileUser | null> {
+    const userDocRef = doc(this.firestore, `users/${uid}`);
+    return from(
+      getDoc(userDocRef).then((userDoc) => {
+        if (userDoc.exists()) {
+          return userDoc.data() as ProfileUser;
+        } else {
+          console.log('No such document!');
+          return null;
+        }
+      }),
+    );
+  }
+
+  addUser(user: any): Observable<void> {
     const userWithRole = {
       ...user,
       role: user.role || 'user', // Default role to 'user' if not provided
