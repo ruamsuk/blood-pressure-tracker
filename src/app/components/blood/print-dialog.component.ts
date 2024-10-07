@@ -79,8 +79,8 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
     .custom-table td {
       border: 1px solid #ddd;
       padding: 4px;
-      font-family: 'Roboto', sans-serif !important;
-      font-size: 12px !important;
+      font-family: 'Sarabun', sans-serif !important;
+      font-size: 14px !important;
       font-weight: bolder !important;
     }
 

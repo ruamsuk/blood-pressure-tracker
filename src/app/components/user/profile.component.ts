@@ -210,6 +210,7 @@ export class ProfileComponent {
   verify: boolean | undefined = false;
   role: string | null = null;
   user: any;
+  displayName: string | null = null;
 
   profileForm = new FormGroup({
     uid: new FormControl(''),
@@ -224,7 +225,6 @@ export class ProfileComponent {
   uploadProgress?: number | null | undefined;
 
   constructor(
-    private dialogService: DialogService,
     private userService: UserService,
     private message: MessagesService,
     private imageService: ImageUploadService,
@@ -240,9 +240,13 @@ export class ProfileComponent {
 
     this.authService.currentUser$.pipe(take(1)).subscribe((user: any) => {
       this.profileForm.patchValue({ ...user });
+      if (user.displayName) {
+        this.displayName = user.displayName;
+      }
     });
     this.authService.userProfile$.pipe(take(1)).subscribe((user: any) => {
       this.profileForm.patchValue({
+        displayName: this.displayName ? this.displayName : user.displayName,
         firstName: user.firstName || '',
         lastName: user.lastName || '',
         phone: user.phone || '',
@@ -324,6 +328,9 @@ export class ProfileComponent {
           this.close();
           this.profileForm.reset();
         },
+      });
+      this.authService.updateProfile({
+        displayName: userData.displayName,
       });
     } else {
       this.userService.addUser(data).subscribe({

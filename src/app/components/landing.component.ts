@@ -80,26 +80,17 @@ import { Router } from '@angular/router';
 export class LandingComponent {
   verify: boolean = false;
   images: any[] = [
-    'images/004.jpg',
-    'images/005.jpg',
-    'images/006.jpg',
-    'images/007.jpg',
-    'images/001.jpg',
-    'images/002.jpg',
-    'images/008.jpg',
-    'images/009.jpg',
-    'images/010.jpg',
-    'images/003.jpg',
+    'images/104.jpg',
+    'images/105.jpg',
+    'images/106.jpg',
+    'images/107.jpg',
+    'images/101.jpg',
+    'images/102.jpg',
+    'images/108.jpg',
+    'images/109.jpg',
+    'images/110.jpg',
+    'images/103.jpg',
   ];
-
-  // images: { url: string; title: string }[] = [
-  //   { url: 'images/004.jpg', title: 'Image 1' },
-  //   { url: 'images/005.jpg', title: 'Image 1' },
-  //   { url: 'images/006.jpg', title: 'Image 1' },
-  //   { url: 'images/001.jpg', title: 'Image 1' },
-  //   { url: 'images/002.jpg', title: 'Image 2' },
-  //   { url: 'images/003.jpg', title: 'Image 3' },
-  // ];
 
   responsiveOptions: any[] = [
     {

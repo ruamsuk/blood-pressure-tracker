@@ -78,4 +78,15 @@ export class AuthService {
       }),
     );
   }
+
+  // เพิ่ม displayName
+  updateProfile(profileData: Partial<UserInfo>): Observable<any> {
+    return of(user).pipe(
+      concatMap((user) => {
+        if (!user) throw new Error('Not Authenticated');
+        const { displayName } = profileData;
+        return from(updateProfile(user, { displayName }));
+      }),
+    );
+  }
 }
