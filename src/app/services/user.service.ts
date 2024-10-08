@@ -14,6 +14,8 @@ import { AuthService } from './auth.service';
 import { from, Observable, of, switchMap } from 'rxjs';
 import { ProfileUser } from '../models/profile-user.model';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { MessagesService } from './messages.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -21,6 +23,8 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export class UserService {
   firestore = inject(Firestore);
   authService = inject(AuthService);
+  message = inject(MessagesService);
+  router = inject(Router);
 
   currentUserProfile$: Observable<ProfileUser | null> =
     this.authService.currentUser$.pipe(
@@ -73,5 +77,23 @@ export class UserService {
   deleteUser(id: string | undefined) {
     const docInstance = doc(this.firestore, 'users', `${id}`);
     return from(deleteDoc(docInstance));
+  }
+
+  sendVerifyEmail() {
+    this.authService.currentUser$.subscribe((user) => {
+      if (user) {
+        user
+          ?.sendEmailVerification()
+          .then(() => {
+            this.message.showSuccess('Email send check your inbox or junk');
+            this.router.navigate(['/login']);
+          })
+          .catch((err: any) => {
+            this.message.showError(err.message);
+          });
+      } else {
+        this.message.showWarn('User not logged in');
+      }
+    });
   }
 }

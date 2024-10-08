@@ -347,7 +347,9 @@ export class ProfileComponent {
     }
   }
 
-  sendEmail() {}
+  sendEmail() {
+    this.userService.sendVerifyEmail();
+  }
 
   close() {
     this.ref.close();
