@@ -23,7 +23,7 @@ import { ForgotPasswordComponent } from '../forgot-password/forgot-password.comp
                   type="email"
                   pInputText
                   formControlName="email"
-                  class="w-full"
+                  class="w-full {{ isEmailValid ? 'ng-invalid ng-dirty' : '' }}"
                   name="email"
                 />
                 <small
@@ -116,14 +116,21 @@ export class LoginComponent implements OnDestroy {
     return false;
   }
 
-  get isValidPassword(): any {
+  get isValidPassword(): string | boolean {
     const control = this.loginForm.get('password');
     const isInvalid = control?.invalid && control.touched;
+
     if (isInvalid) {
-      return control.hasError('required')
-        ? 'This field is required'
-        : 'Enter a valid password';
+      if (control.hasError('required')) {
+        return 'This field is required';
+      } else if (control.hasError('minlength')) {
+        return 'Password must be at least 6 characters long';
+      } else {
+        return 'Enter a valid password';
+      }
     }
+
+    return false;
   }
 
   login(): void {

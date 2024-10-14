@@ -238,22 +238,28 @@ export class ProfileComponent {
     this.verify = auth.currentUser?.emailVerified;
     this.user = this.authService.currentUser();
 
+    /** คือผู้ใช้ใน firebase */
     this.authService.currentUser$.pipe(take(1)).subscribe((user: any) => {
       this.profileForm.patchValue({ ...user });
       if (user.displayName) {
         this.displayName = user.displayName;
       }
     });
+    /** ข้อมูลผู้ใช้ใน firestore */
     this.authService.userProfile$.pipe(take(1)).subscribe((user: any) => {
-      this.profileForm.patchValue({
-        displayName: this.displayName ? this.displayName : user.displayName,
-        firstName: user.firstName || '',
-        lastName: user.lastName || '',
-        phone: user.phone || '',
-        address: user.address || '',
-        role: user.role || '',
-      });
-      this.role = user.role;
+      if (user) {
+        this.profileForm.patchValue({
+          displayName: this.displayName ? this.displayName : user.displayName,
+          firstName: user.firstName || '',
+          lastName: user.lastName || '',
+          phone: user.phone || '',
+          address: user.address || '',
+          role: user.role || '',
+        });
+        this.role = user.role;
+      } else {
+        console.error('Unable to get user profile');
+      }
     });
   }
 
@@ -318,21 +324,38 @@ export class ProfileComponent {
       address: userData.address,
       role: this.role,
     };
-
     if (this.dialogData.data) {
-      this.userService.updateUser(data).subscribe({
-        next: () => {},
-        error: (err) => this.message.showError(err.message),
-        complete: () => {
-          this.message.showSuccess('Updated Successfully');
-          this.close();
-          this.profileForm.reset();
-        },
+      /** ถ้ามีข้อมูลส่งมา ให้หาว่ามีข้อมูลใน collection หรือไม่ */
+      this.userService.getUserByUid(this.user.uid).subscribe((user) => {
+        if (user) {
+          /** ถ้ามีข้อมูล ก็ปรับปรุ่งข้อมูล */
+          this.userService.updateUser(data).subscribe({
+            next: () => {},
+            error: (err) => this.message.showError(err.message),
+            complete: () => {
+              this.message.showSuccess('Updated Successfully');
+              this.close();
+              this.profileForm.reset();
+            },
+          });
+          /** ถ้าไม่มีข้อมูลเดิมในตอลเลคชั่น ก็เพิ่มเข้าไปใหม่ */
+        } else {
+          this.userService.addUser(data).subscribe({
+            next: () => {},
+            error: (err) => this.message.showError(err.message),
+            complete: () => {
+              this.message.showSuccess('Added Successfully');
+              this.close();
+            },
+          });
+        }
       });
+
       this.authService.updateProfile({
         displayName: userData.displayName,
       });
     } else {
+      /** เพิ่มข้อมูลใหม่ */
       this.userService.addUser(data).subscribe({
         next: (value) => {},
         error: (error) => {

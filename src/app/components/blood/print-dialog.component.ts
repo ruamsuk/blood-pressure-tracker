@@ -3,7 +3,13 @@ import { SharedModule } from '../../shared/shared.module';
 import { ThaiDatePipe } from '../../pipe/thai-date.pipe';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
-import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
+import {
+  DialogService,
+  DynamicDialogConfig,
+  DynamicDialogRef,
+} from 'primeng/dynamicdialog';
+import { DataService } from '../../services/data.service';
+import { PrintComponent } from '../page/print.component';
 
 @Component({
   selector: 'app-print-dialog',
@@ -112,10 +118,18 @@ import { DynamicDialogConfig, DynamicDialogRef } from 'primeng/dynamicdialog';
 
       th,
       td {
-        padding: 10px;
+        padding: 8px;
         text-align: left;
       }
 
+      th {
+        background-color: #f2f2f2; /* สีพื้นหลัง */
+        font-weight: bold;
+      }
+
+      .thick-border {
+        border-width: 2px; /* กำหนดความหนาของเส้นตาราง */
+      }
       /* ตั้งค่าหน้ากระดาษ */
       @page {
         margin: 1cm;
@@ -130,6 +144,8 @@ export class PrintDialogComponent implements OnDestroy {
   constructor(
     private ref: DynamicDialogRef,
     private config: DynamicDialogConfig,
+    private dataService: DataService,
+    private dialogService: DialogService,
   ) {
     if (this.config.data) {
       this.dataPrint = config.data;
@@ -161,7 +177,12 @@ export class PrintDialogComponent implements OnDestroy {
   }
 
   printPage() {
-    window.print();
-    this.ref.close();
+    this.dataService.changeData(this.dataPrint);
+    this.dialogService.open(PrintComponent, {
+      header: 'Direct Print',
+      modal: true,
+      dismissableMask: true,
+      data: this.dataPrint,
+    });
   }
 }

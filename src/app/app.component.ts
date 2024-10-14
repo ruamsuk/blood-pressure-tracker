@@ -8,8 +8,6 @@ import { of, switchMap, take } from 'rxjs';
 import { FooterComponent } from './components/page/footer.component';
 import { DialogService, DynamicDialogRef } from 'primeng/dynamicdialog';
 import { ProfileComponent } from './components/user/profile.component';
-import { User } from '@angular/fire/auth';
-import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
 
 @Component({
   selector: 'app-root',
@@ -99,7 +97,7 @@ export class AppComponent implements OnInit, OnDestroy {
   user$: any;
   display: any;
 
-  currentUser = this.userService.currentUserProfile;
+  currentUser = this.authService.currentUser;
   loading = this.message.loading;
 
   ngOnInit() {

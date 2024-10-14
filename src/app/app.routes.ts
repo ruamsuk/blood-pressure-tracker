@@ -5,7 +5,6 @@ import {
   redirectLoggedInTo,
   redirectUnauthorizedTo,
 } from '@angular/fire/auth-guard';
-import { BloodListComponent } from './components/blood/blood-list.component';
 import { LandingComponent } from './components/landing.component';
 import { BloodTabComponent } from './components/blood/blood-tab.component';
 import { UserListComponent } from './components/user/user-list.component';

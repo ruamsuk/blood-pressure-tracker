@@ -34,6 +34,7 @@ export class AuthService {
 
   get userProfile$(): Observable<ProfileUser | null> {
     const user = this.afAuth.currentUser;
+    console.log(JSON.stringify(user, null, 2));
     const ref = doc(this.firestore, 'users', `${user?.uid}`);
     if (ref) {
       return docData(ref) as Observable<ProfileUser | null>;
